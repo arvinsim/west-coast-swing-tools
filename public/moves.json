@@ -1,0 +1,134 @@
+{
+    "moves": [
+        {
+            "id": "sugar-push",
+            "names": [
+                "Sugar Push"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "sugar-tuck",
+            "names": [
+                "Sugar Tuck"
+            ],
+            "entry": "open",
+            "exit": "closed"
+        },
+        {
+            "id": "left-side-pass",
+            "names": [
+                "Left Side Pass"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "tuck-turn",
+            "names": [
+                "Tuck Turn",
+                "Passing Tuck Turn"
+            ],
+            "entry": "open",
+            "exit": "closed"
+        },
+        {
+            "id": "inside-turn",
+            "names": [
+                "Inside Turn"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "free-turn",
+            "names": [
+                "Free Turn"
+            ],
+            "entry": "open",
+            "exit": "open"  
+        },
+        {
+            "id": "right-side-pass",
+            "names": [
+                "Underarm Turn",
+                "Right Side Pass"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "outside-turn",
+            "names": [
+                "Outside Turn"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "whip",
+            "names": [
+                "Whip"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "whip-with-inside-turn",
+            "names": [
+                "Whip with Inside Turn"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "whip-with-outside-turn",
+            "names": [
+                "Whip with Outside Turn"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "reverse-whip",
+            "names": [
+                "Reverse Whip"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "reverse-whip-with-inside-turn",
+            "names": [
+                "Reverse Whip with Inside Turn"
+            ],
+            "entry": "open",
+            "exit": "open"  
+        },
+        {
+            "id": "reverse-whip-with-outside-turn",
+            "names": [
+                "Reverse Whip with Outside Turn"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "basket-whip",
+            "names": [
+                "Basket Whip"
+            ],
+            "entry": "open",
+            "exit": "open"
+        },
+        {
+            "id": "rock-and-go",
+            "names": [
+                "Rock and Go"
+            ],
+            "entry": "open",
+            "exit": "open"
+        }
+    ]
+}
