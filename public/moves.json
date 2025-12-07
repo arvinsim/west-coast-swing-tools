@@ -5,24 +5,43 @@
             "names": [
                 "Sugar Push"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 6,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "sugar-tuck",
             "names": [
                 "Sugar Tuck"
             ],
-            "entry": "open",
-            "exit": "closed"
+            "beats": 6,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "left-side-pass",
             "names": [
                 "Left Side Pass"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 6,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R",
+                "R-R"
+            ]
         },
         {
             "id": "tuck-turn",
@@ -30,24 +49,40 @@
                 "Tuck Turn",
                 "Passing Tuck Turn"
             ],
-            "entry": "open",
-            "exit": "closed"
+            "beats": 6,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "inside-turn",
             "names": [
                 "Inside Turn"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 6,
+            "entry": [
+                "L-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "free-turn",
             "names": [
                 "Free Turn"
             ],
-            "entry": "open",
-            "exit": "open"  
+            "beats": 6,
+            "entry": [
+                "L-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "right-side-pass",
@@ -55,80 +90,140 @@
                 "Underarm Turn",
                 "Right Side Pass"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 6,
+            "entry": [
+                "L-R"
+            ],
+            "exit": [
+                "L-R",
+                "R-R"
+            ]
         },
         {
             "id": "outside-turn",
             "names": [
                 "Outside Turn"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 6,
+            "entry": [
+                "L-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "whip",
             "names": [
                 "Whip"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 8,
+            "entry": [
+                "L-R",
+                "Closed",
+                "R-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "whip-with-inside-turn",
             "names": [
                 "Whip with Inside Turn"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 8,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "whip-with-outside-turn",
             "names": [
                 "Whip with Outside Turn"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 8,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "reverse-whip",
             "names": [
                 "Reverse Whip"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 8,
+            "entry": [
+                "L-L",
+                "R-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "reverse-whip-with-inside-turn",
             "names": [
                 "Reverse Whip with Inside Turn"
             ],
-            "entry": "open",
-            "exit": "open"  
+            "beats": 8,
+            "entry": [
+                "L-L",
+                "R-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "reverse-whip-with-outside-turn",
             "names": [
                 "Reverse Whip with Outside Turn"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 8,
+            "entry": [
+                "L-L",
+                "R-R"
+            ],
+            "exit": [
+                "L-R"
+            ]
         },
         {
             "id": "basket-whip",
             "names": [
                 "Basket Whip"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 8,
+            "entry": [
+                "L-R",
+                "Closed"
+            ],
+            "exit": [
+                "L-R",
+                "Closed"
+            ]
         },
         {
             "id": "rock-and-go",
             "names": [
                 "Rock and Go"
             ],
-            "entry": "open",
-            "exit": "open"
+            "beats": 6,
+            "entry": [
+                "Closed"
+            ],
+            "exit": [
+                "L-R"
+            ]
         }
     ]
 }
