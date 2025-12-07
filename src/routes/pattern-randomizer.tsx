@@ -68,8 +68,9 @@ function PatternRandomizer() {
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Use different frequency for 4th beat (when beatCountRef.current % 4 === 3)
-        const frequency = (beatCountRef.current % 4 === 3) ? 1200 : 800;
+        // Use different frequency for 4th and 8th beats (when beatCountRef.current % 8 === 3 or beatCountRef.current % 8 === 7)
+        const beatPosition = beatCountRef.current % 8;
+        const frequency = (beatPosition === 3 || beatPosition === 7) ? 1200 : 800;
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
         oscillator.type = 'sine';
         
@@ -99,14 +100,14 @@ function PatternRandomizer() {
             beatCountRef.current = 0;
             
             const newBeatIntervalId = setInterval(() => {
-                // Check current beat position
-                const currentBeat = beatCountRef.current % 4;
+                // Check current beat position in 8-beat pattern
+                const currentBeat = beatCountRef.current % 8;
                 
                 // Play beat sound
                 playBeat();
                 
-                // Call out only on beat 2 (when currentBeat === 1)
-                if (currentBeat === 1) {
+                // Call out on beat 4 of the 8-beat pattern (when currentBeat === 3)
+                if (currentBeat === 3) {
                     say();
                 }
                 
