@@ -1,11 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 export const Route = createFileRoute('/pattern-randomizer')({
   component: PatternRandomizer,
 })
 
 const synth = window.speechSynthesis
+
+interface Move {
+    id: string;
+    names: string[];
+    entry: string;
+    exit: string;
+}
+
+interface MovesData {
+    moves: Move[];
+}
 
 function PatternRandomizer() {
     const [bpm, setBpm] = useState(80)
@@ -14,10 +25,31 @@ function PatternRandomizer() {
     const [isRunning, setIsRunning] = useState(false)
     const [volume, setVolume] = useState(0.5)
     const [beatEnabled, setBeatEnabled] = useState(true)
+    const [moves, setMoves] = useState<Move[]>([])
     const beatCountRef = useRef(0)
 
+    useEffect(() => {
+        // Load moves data
+        fetch('/moves.json')
+            .then(response => response.json())
+            .then((data: MovesData) => {
+                setMoves(data.moves);
+            })
+            .catch(error => {
+                console.error('Failed to load moves:', error);
+                // Fallback to default move
+                setMoves([{ id: 'sugar-push', names: ['Sugar Push'], entry: 'open', exit: 'open' }]);
+            });
+    }, []);
+
     const say = () => {
-        const utterThis = new SpeechSynthesisUtterance("Sugar Push");
+        if (moves.length === 0) return;
+        
+        // Randomly select a move
+        const randomMove = moves[Math.floor(Math.random() * moves.length)];
+        const moveName = randomMove.names[0];
+        
+        const utterThis = new SpeechSynthesisUtterance(moveName);
         const voices = synth.getVoices();
         const voice = voices.find(v => v.name === "Google US English");
         if (voice) {
@@ -91,6 +123,21 @@ function PatternRandomizer() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-red-50">
             <div className="text-3xl font-bold text-red-900 mb-6">Pattern Randomizer</div>
             
+            <div className="mb-6 max-w-2xl bg-white rounded-lg shadow-md p-6 border-l-4 border-red-600">
+                <div className="flex items-start">
+                    <div className="flex-shrink-0 mr-3">
+                        <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold text-red-900 mb-2">About WCS Tempo</h3>
+                        <p className="text-gray-700 leading-relaxed">
+                            West Coast Swing (WCS) has a very flexible tempo, commonly danced between 80-130 BPM, but ideal social tempos are often cited around 90-110 BPM, with faster tracks extending to 120+ BPM and slower tracks going down to 80 BPM or even lower for advanced dancers, allowing for varied styles from smooth to energetic. Beginners usually start around 90-100 BPM, while experienced dancers can handle the full range, with slower songs focusing on connection and faster ones on bigger movements.
+                        </p>
+                    </div>
+                </div>
+            </div>
             <div className="mb-4 flex flex-col items-center">
                 <label className="text-red-800 font-semibold mb-2">BPM</label>
                 <input 
