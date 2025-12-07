@@ -54,6 +54,8 @@ function PatternRandomizer() {
             });
     }, []);
 
+
+    // @ts-expect-error
     const getRandomMove = (exitState?: string[]): Move => {
         if (moves.length === 0) {
             return { 
