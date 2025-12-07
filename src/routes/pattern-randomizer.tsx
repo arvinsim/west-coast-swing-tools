@@ -10,8 +10,9 @@ const synth = window.speechSynthesis
 interface Move {
     id: string;
     names: string[];
-    entry: string;
-    exit: string;
+    beats: number;
+    entry: string[];
+    exit: string[];
 }
 
 interface MovesData {
@@ -19,14 +20,19 @@ interface MovesData {
 }
 
 function PatternRandomizer() {
-    const [bpm, setBpm] = useState(80)
-    const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
-    const [beatIntervalId, setBeatIntervalId] = useState<NodeJS.Timeout | null>(null)
+    const [bpm, setBpm] = useState(90)
     const [isRunning, setIsRunning] = useState(false)
     const [volume, setVolume] = useState(0.5)
     const [beatEnabled, setBeatEnabled] = useState(true)
     const [moves, setMoves] = useState<Move[]>([])
+    const [currentMove, setCurrentMove] = useState<Move | null>(null)
+    const [nextMove, setNextMove] = useState<Move | null>(null)
+    
+    const moveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const calloutTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const beatIntervalRef = useRef<NodeJS.Timeout | null>(null)
     const beatCountRef = useRef(0)
+    const moveStartTimeRef = useRef<number>(0)
 
     useEffect(() => {
         // Load moves data
@@ -38,17 +44,33 @@ function PatternRandomizer() {
             .catch(error => {
                 console.error('Failed to load moves:', error);
                 // Fallback to default move
-                setMoves([{ id: 'sugar-push', names: ['Sugar Push'], entry: 'open', exit: 'open' }]);
+                setMoves([{ 
+                    id: 'sugar-push', 
+                    names: ['Sugar Push'], 
+                    beats: 6,
+                    entry: ['L-R'], 
+                    exit: ['L-R'] 
+                }]);
             });
     }, []);
 
-    const say = () => {
-        if (moves.length === 0) return;
+    const getRandomMove = (exitState?: string[]): Move => {
+        if (moves.length === 0) {
+            return { 
+                id: 'sugar-push', 
+                names: ['Sugar Push'], 
+                beats: 6,
+                entry: ['L-R'], 
+                exit: ['L-R'] 
+            };
+        }
         
-        // Randomly select a move
-        const randomMove = moves[Math.floor(Math.random() * moves.length)];
-        const moveName = randomMove.names[0];
-        
+        // For now, just return a random move
+        // TODO: Implement proper state machine filtering based on exitState
+        return moves[Math.floor(Math.random() * moves.length)];
+    };
+
+    const speak = (moveName: string) => {
         const utterThis = new SpeechSynthesisUtterance(moveName);
         const voices = synth.getVoices();
         const voice = voices.find(v => v.name === "Google US English");
@@ -56,7 +78,7 @@ function PatternRandomizer() {
             utterThis.voice = voice;
         }
         synth.speak(utterThis);
-    }
+    };
 
     const playBeat = () => {
         if (!beatEnabled) return;
@@ -68,9 +90,8 @@ function PatternRandomizer() {
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Use different frequency for 4th and 8th beats (when beatCountRef.current % 8 === 3 or beatCountRef.current % 8 === 7)
-        const beatPosition = beatCountRef.current % 8;
-        const frequency = (beatPosition === 3 || beatPosition === 7) ? 1200 : 800;
+        // Use different frequency for beats that are multiples of 4 (end of measures)
+        const frequency = (beatCountRef.current % 4 === 3) ? 1200 : 800;
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
         oscillator.type = 'sine';
         
@@ -79,50 +100,109 @@ function PatternRandomizer() {
         
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.1);
-    }
+    };
+
+    const playMove = (move: Move) => {
+        console.log(`Starting: ${move.names[0]} (${move.beats} beats)`);
+        
+        setCurrentMove(move);
+        moveStartTimeRef.current = Date.now();
+        
+        const BEAT_MS = (60 / bpm) * 1000;
+        const LOOKAHEAD_BEATS = 2;
+        
+        // Calculate when to announce the next move (2 beats before current move ends)
+        const calloutDelay = (move.beats - LOOKAHEAD_BEATS) * BEAT_MS;
+        
+        // Schedule the voice callout for the NEXT move
+        calloutTimeoutRef.current = setTimeout(() => {
+            const nextMoveToPlay = getRandomMove(move.exit);
+            setNextMove(nextMoveToPlay);
+            speak(`Next move: ${nextMoveToPlay.names[0]}`);
+            
+            // Schedule the next move to start exactly when current move ends
+            moveTimeoutRef.current = setTimeout(() => {
+                playMove(nextMoveToPlay);
+            }, LOOKAHEAD_BEATS * BEAT_MS);
+            
+        }, calloutDelay);
+    };
+
+    const startBeatMetronome = () => {
+        const BEAT_MS = (60 / bpm) * 1000;
+        beatCountRef.current = 0;
+        
+        beatIntervalRef.current = setInterval(() => {
+            playBeat();
+            beatCountRef.current += 1;
+        }, BEAT_MS);
+    };
+
+    const stopAll = () => {
+        // Clear all timeouts and intervals
+        if (moveTimeoutRef.current) {
+            clearTimeout(moveTimeoutRef.current);
+            moveTimeoutRef.current = null;
+        }
+        if (calloutTimeoutRef.current) {
+            clearTimeout(calloutTimeoutRef.current);
+            calloutTimeoutRef.current = null;
+        }
+        if (beatIntervalRef.current) {
+            clearInterval(beatIntervalRef.current);
+            beatIntervalRef.current = null;
+        }
+        
+        beatCountRef.current = 0;
+        setCurrentMove(null);
+        setNextMove(null);
+        setIsRunning(false);
+    };
 
     const toggleRandomizer = () => {
         if (isRunning) {
-            // Stop the randomizer
-            if (intervalId) {
-                clearInterval(intervalId);
-                setIntervalId(null);
-            }
-            if (beatIntervalId) {
-                clearInterval(beatIntervalId);
-                setBeatIntervalId(null);
-            }
-            beatCountRef.current = 0;
-            setIsRunning(false);
+            stopAll();
         } else {
-            // Start the randomizer
-            const beatInterval = (60 / bpm) * 1000; // 1 beat in milliseconds
-            beatCountRef.current = 0;
+            if (moves.length === 0) return;
             
-            const newBeatIntervalId = setInterval(() => {
-                // Check current beat position in 8-beat pattern
-                const currentBeat = beatCountRef.current % 8;
-                
-                // Play beat sound
-                playBeat();
-                
-                // Call out on beat 4 of the 8-beat pattern (when currentBeat === 3)
-                if (currentBeat === 3) {
-                    say();
-                }
-                
-                // Increment beat count
-                beatCountRef.current += 1;
-            }, beatInterval);
-            
-            setBeatIntervalId(newBeatIntervalId);
             setIsRunning(true);
+            
+            // Start the beat metronome
+            startBeatMetronome();
+            
+            // Start with the first move
+            const firstMove = getRandomMove();
+            playMove(firstMove);
         }
-    }
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-red-50">
             <div className="text-3xl font-bold text-red-900 mb-6">Pattern Randomizer</div>
+            
+            {/* Current and Next Move Display */}
+            {isRunning && (
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+                    <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
+                        <h3 className="text-lg font-semibold text-blue-900 mb-2">Current Move</h3>
+                        <p className="text-xl font-bold text-gray-800">
+                            {currentMove ? currentMove.names[0] : 'Starting...'}
+                        </p>
+                        {currentMove && (
+                            <p className="text-sm text-gray-600 mt-1">{currentMove.beats} beats</p>
+                        )}
+                    </div>
+                    <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
+                        <h3 className="text-lg font-semibold text-green-900 mb-2">Next Move</h3>
+                        <p className="text-xl font-bold text-gray-800">
+                            {nextMove ? nextMove.names[0] : 'Preparing...'}
+                        </p>
+                        {nextMove && (
+                            <p className="text-sm text-gray-600 mt-1">{nextMove.beats} beats</p>
+                        )}
+                    </div>
+                </div>
+            )}
             
             <div className="mb-6 max-w-2xl bg-white rounded-lg shadow-md p-6 border-l-4 border-red-600">
                 <div className="flex items-start">
