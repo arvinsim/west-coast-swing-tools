@@ -8,7 +8,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/west-coast-swing-tools/',
+  base: process.env.NODE_ENV === 'production' ? '/west-coast-swing-tools/' : '/',
   plugins: [
     devtools(),
     tanstackRouter({
@@ -22,5 +22,10 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
   },
 })

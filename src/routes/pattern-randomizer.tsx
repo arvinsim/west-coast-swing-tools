@@ -36,7 +36,8 @@ function PatternRandomizer() {
 
     useEffect(() => {
         // Load moves data
-        fetch('/moves.json')
+        const basePath = import.meta.env.BASE_URL || '/';
+        fetch(`${basePath}moves.json`)
             .then(response => response.json())
             .then((data: MovesData) => {
                 setMoves(data.moves);
